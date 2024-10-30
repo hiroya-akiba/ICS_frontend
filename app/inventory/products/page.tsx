@@ -32,6 +32,23 @@ export default function Page(){
         event.preventDefault();
         setShownNewRow(false)
     };
+    
+    // 更新・削除処理、更新・削除行の表示状態を保持
+    const [editingRow, setEdintingRow] = useState(0);
+    const handleEditRow: any = (id: number) => {
+        setShownNewRow(false)
+        setEdintingRow(id)
+    };
+    const handleEditCancel: any = (id: number) => {
+        setEdintingRow(0)
+    };
+    const handleEdit: any = (id: number) => {
+        setEdintingRow(0)
+    };
+    const handleDelete: any = (id: number) => {
+        setEdintingRow(0)
+    };
+
 
     return(
         <>
@@ -39,6 +56,15 @@ export default function Page(){
             <p>商品の一覧を表示します</p>
             <button onClick={ handleShowNewRow }>商品を追加する</button>
             <table>
+                <thead>
+                    <tr>
+                        <th>商品ID</th>
+                        <th>商品名</th>
+                        <th>単価</th>
+                        <th>説明</th>
+                        <th></th>
+                    </tr>
+                </thead>
                 <tbody>
                     {shownNewRow ? (
                         <tr>
