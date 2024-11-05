@@ -11,12 +11,31 @@ type ProductData = {
     description: string;
 }
 
+type InputData = {
+    id: string;
+    name: string;
+    price: string;
+    description: string;
+}
+
 export default function Page(){
     const [data, setData] = useState<Array<ProductData>>([]);
+    const [input, setInput] = useState<InputData>({
+        id: "",
+        name: "",
+        description: "",
+        price: "",
+    })
 
     useEffect(() => {
         setData(productsData); //importしたjsonを定義したステートフル変数に入れる
     }, [])
+
+    // 登録データの値を更新
+    const handleInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { value, name } = event.target;
+        setInput({ ...input, [name]: value}); //...はスプレッド構文
+    }
 
     // 新規登録処理、新規登録行の表示状態を保持
     const [shownNewRow, setShownNewRow] = useState(false);
@@ -38,6 +57,13 @@ export default function Page(){
     const handleEditRow: any = (id: number) => {
         setShownNewRow(false)
         setEdintingRow(id)
+        const selectedProduct: ProductData = data.find((v) => v.id === id) as ProductData;
+        setInput({
+            id: id.toString(),
+            name: selectedProduct.name,
+            price: selectedProduct.price.toString(),
+            description: selectedProduct.description,
+        })
     };
     const handleEditCancel: any = (id: number) => {
         setEdintingRow(0)
@@ -66,12 +92,14 @@ export default function Page(){
                     </tr>
                 </thead>
                 <tbody>
+                {/*商品追加欄*/}
+                {/*shownNewRowの値がtrueの時: 追加欄を表示する*/}
                     {shownNewRow ? (
                         <tr>
                             <td></td>
-                            <td><input type="text" /></td>
-                            <td><input type="number" /></td>
-                            <td><input type="text" /></td>
+                            <td><input type="text" name="name" onChange={handleInput}/></td>
+                            <td><input type="number" name="price" onChange={handleInput}/></td>
+                            <td><input type="text" name="description" onChange={handleInput}/></td>
                             <td></td>
                             <td>
                                 <button onClick={(event) => handleAddCancel(event)}>キャンセル</button>
@@ -79,14 +107,16 @@ export default function Page(){
                             </td>
                         </tr>
                     ): ""}
+                {/*edittingRowの値が商品IDと同一の時 : 更新モード
+                   edittingRowの値が0の時           : 表示モード*/}
                     {/*setDataで代入したステートフル変数をforEachで回す*/}
                     {data.map((data: any) => (
                         editingRow === data.id ? (
                             <tr key={data.id}>
                                 <td>{data.id}</td>
-                                <td><input type="text"   defaultValue={data.name} /></td>
-                                <td><input type="number" defaultValue={data.price} /></td>
-                                <td><input type="text"   defaultValue={data.description} /></td>
+                                <td><input type="text"   defaultValue={input.name} /></td>
+                                <td><input type="number" defaultValue={input.price} /></td>
+                                <td><input type="text"   defaultValue={input.description} /></td>
                                 <td></td>
                                 <td>
                                     <button onClick={() => handleEditCancel(data.id)}>キャンセル</button>
@@ -95,8 +125,8 @@ export default function Page(){
                                 </td>
                             </tr>
                         ) : (
-                    
                             <tr key={data.id}>
+                                
                                 <td>{data.id}</td>
                                 <td>{data.name}</td>
                                 <td>{data.price}</td>
