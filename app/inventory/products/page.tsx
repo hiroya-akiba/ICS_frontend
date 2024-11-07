@@ -20,13 +20,19 @@ type ProductData = {
  * デフォルト関数
  */
 export default function Page(){
-    //
+    /**
+     * useForm関数
+     * 以下はreact-hook-formライブラリのフォーム管理のための構文
+     * useForm()という関数を呼び出して、いくつかの関数に分割して取得している。
+     * フォーム作成、送信処理、エラーハンドリングなどの操作の管理をするためのプロパティが用意されている。
+     * この関数を用いることでフォーム管理が簡単に行えるようになる。
+     */
     const {
-        register,
-        handleSubmit,
-        reset,
-        formState: {errors},
-    } = useForm(); //どういう意味だよ
+        register,            // フォームの各フィールドを登録するための関数
+        handleSubmit,        // フォームの送信イベントを処理する関数
+        reset,               // フォームの値を初期状態にリセットするための関数
+        formState: {errors}, // フォームの状態を保持するオブジェクトで、errorsプロパティはバリデーションエラーの情報を保持する。
+    } = useForm();
 
     // ステートフル変数dataを定義, 型はArray型, Array型の中身はProductData型
     const [data, setData] = useState<Array<ProductData>>([]);
@@ -104,18 +110,21 @@ export default function Page(){
     /**
      * 更新・削除処理、更新・削除行の表示状態を保持する関数
      */
-    const handelEditRow = (id: number | null) => {
+    const handleEditRow = (id: number | null) => {
 
-        // selectedProductという定数をProductData型で定義
-        //   findメソッド: カッコ内を満たす最初のdata要素を返却し、見つからなかった場合はundefinedを返却
-        //   v: data配列内の各オブジェクトを指す
-        //   as ProductData: 戻り値をキャスト(強制型変換)する (undefinedを返した場合のエラーハンドリング)
+        /** 
+         * selectedProductという定数をProductData型で定義
+         *   findメソッド: カッコ内を満たす最初のdata要素を返却し、見つからなかった場合はundefinedを返却
+         *   v: data配列内の各オブジェクトを指す
+         *   as ProductData: 戻り値をキャスト(強制型変換)する (undefinedを返した場合のエラーハンドリング)
+         */
         const selectedProduct: ProductData = data.find( (v) => v.id === id ) as ProductData;
 
         // ステートフル変数idに代入
         setId(selectedProduct.id);
 
         // reset関数を呼び出す
+        // 初期値に元の名前・値段・説明を入れて表示させる。
         reset({
             name: selectedProduct.name,
             price: selectedProduct.price,
@@ -152,9 +161,72 @@ export default function Page(){
                         </tr>
                     </thead>
                     <tbody>
+                        {/*アイテムが一つもない時には、登録フォームだけを表示する。*/}
+                        {id === null ?(
+                            <tr>
+                                <td></td>
+                                <td>
+                                {/* register */}
+                                    <input type="text" id="name" {...register("name", {required: true, maxLength: 100})} />
+                                    {errors.name && (<div>100文字以内の商品名を入力してください</div>)}
+                                </td>
+                                <td>
+                                    <input type="number" id="price" {...register("price", {required: true, min: 1, max: 99999999, })}/>
+                                    {errors.price && (<div>1から99999999の数値を入力してください</div>)}
+                                </td>
+                                <td>
+                                    <input type="text" id="description" {...register("description")} />
+                                </td>
+                                {/*ルーティングのために追加*/}
+                                <td></td>
+                                <td>
+                                    <button type="button" onClick={() => handleAddCancel()}>キャンセル</button> {/*関数をonClickに追加する*/}
+                                    <button type="submit" onClick={() => setAction("add")}>登録する</button>
+                                </td>
+                            </tr>
+                        ) : ("")}
+                        {/*アイテムが一つ以上存在するとき*/}
+                        {/*handleEditRow関数を呼び出して、ステートフル変数idに値を入れることで、編集モードに切り替える。*/}
+                        {data.map((data: any) => (
+                            id === data.id ? (
+                                <tr key={data.id}>
+                                    <td>{data.id}</td>
+                                    <td>
+                                        <input type="text" id="name" {...register("name", {required: true, maxLength: 100})} />
+                                        {errors.name && (<div>100文字以内の商品名を入力してください</div>)}
+                                    </td>
+                                    <td>
+                                        <input type="number" id="price" {...register("price", {required: true, min: 1, max: 99999999, })}/>
+                                        {errors.price && (<div>1から99999999の数値を入力してください</div>)}
+                                    </td>
+                                    <td>
+                                        <input type="text" id="description" {...register("description")} />
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <button type="button" onClick={() => handleEditCancel()}>キャンセル</button>
+                                        <button type="submit" onClick={() => setAction("update")}>更新する</button>
+                                        <button type="submit" onClick={() => setAction("delete")}>削除する</button>
+                                    </td>
+                                </tr>
+                            ) : (
+                                <tr key={data.id}>
+
+                                    <td>{data.id}</td>
+                                    <td>{data.name}</td>
+                                    <td>{data.price}</td>
+                                    <td>{data.description}</td>
+                                    <td><Link href={`/inventory/products/${data.id}`}>在庫処理</Link></td>
+                                    <td>
+                                        <button onClick={() => handleEditRow(data.id)}>更新・削除</button>
+                                    </td>
+                                </tr>
+                            )
+                        ))}
                     {/*商品追加欄*/}
                     {/*shownNewRowの値がtrueの時: 追加欄を表示する*/}
-                        {id === null ? (
+                    {/*
+                        {shownNewRow ? (
                             <tr>
                                 <td></td>
                                 <td><input type="text" name="name" onChange={handleInput}/></td>
@@ -167,9 +239,11 @@ export default function Page(){
                                 </td>
                             </tr>
                         ): ""}
+                    */}
                     {/*edittingRowの値が商品IDと同一の時 : 更新モード
                        edittingRowの値が0の時           : 表示モード*/}
                         {/*setDataで代入したステートフル変数をforEachで回す*/}
+                        {/*
                         {data.map((data: any) => (
                             editingRow === data.id ? (
                                 <tr key={data.id}>
@@ -198,6 +272,7 @@ export default function Page(){
                                 </tr>
                             )
                         ))}
+                        */}
                     </tbody>
                 </table>
             </form>
