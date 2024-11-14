@@ -1,3 +1,7 @@
+// プロジェクト作成時に作成されるlayout.tsx
+// {page.tsx}を受け取って、{children}に代入する。
+// そして、「フレーム」を付けてあげる役割がある。
+
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
