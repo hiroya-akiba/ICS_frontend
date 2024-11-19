@@ -66,6 +66,12 @@ export default function Page(){
     const [open, setOpen] = useState(false);
     const [severity, setSeverity] = useState<AlertColor>('success');
     const [message, setMessage] = useState('');
+    /**
+     * result関数
+     * Add, Edit, Delete等のDB処理を行った際にスナックバーを表示するための関数
+     * @param severity 表示する色 Success, Info, Warning, Error
+     * @param message 表示するメッセージ
+     */
     const result = (severity: AlertColor, message: string) => {
         setOpen(true);
         setSeverity(severity);
@@ -88,9 +94,9 @@ export default function Page(){
     /**
      * onSubmit関数
      * actionの値によってPOSTされたフォームに対する動作を切り替える
-     * add: handleAdd(新たなデータを生成)
-     * update: handleEdit(既存データを編集)
-     * delete: handleDelete(既存データを削除)
+     * add: handleAdd(新たなデータを生成し、スナックバーを表示させる)
+     * update: handleEdit(既存データを編集し、スナックバーを表示させる)
+     * delete: handleDelete(既存データを削除し、スナックバーを表示させる)
      * @param event クリックした時のevent
      */
     const onSubmit = (event: any): void =>{ // event(any型)を引数として返却値は空の関数を定義
@@ -109,7 +115,7 @@ export default function Page(){
             if (data.id === null){
                 return;
             }
-            handleEdit(data)
+            handleEdit(data) //result
         } else if (action === "delete") {
             if (data.id === null) {
                 return;
@@ -236,23 +242,23 @@ export default function Page(){
                                         />
                                     </TableCell>
                                     <TableCell>
-                                    <TextField
-                                        type="number"
-                                        id="price"
-                                        {...register("price", {
-                                        required: "必須入力です。",
-                                        min: {
-                                            value: 1,
-                                            message: "1から99999999の数値を入力してください",
-                                        },
-                                        max: {
-                                            value: 99999999,
-                                            message: "1から99999999の数値を入力してください",
-                                        },
-                                        })}
-                                        error={Boolean(errors.price)}
-                                        helperText={errors.price?.message?.toString() || ""}
-                                    />
+                                        <TextField
+                                            type="number"
+                                            id="price"
+                                            {...register("price", {
+                                            required: "必須入力です。",
+                                            min: {
+                                                value: 1,
+                                                message: "1から99999999の数値を入力してください",
+                                            },
+                                            max: {
+                                                value: 99999999,
+                                                message: "1から99999999の数値を入力してください",
+                                            },
+                                            })}
+                                            error={Boolean(errors.price)}
+                                            helperText={errors.price?.message?.toString() || ""}
+                                        />
                                 </TableCell>
                                 <TableCell>
                                     <TextField
