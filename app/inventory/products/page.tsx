@@ -29,6 +29,7 @@ import {useForm} from "react-hook-form";
 import React, { useState, useEffect } from 'react';
 import productsData from "./sample/dummy_products.json";
 import Link from "next/link";
+import axios from "axios";
 
 /**
  * 製品データ
@@ -84,8 +85,13 @@ export default function Page(){
 
     // useEffect関数を定義
     useEffect(() => {
-        setData(productsData); //importしたjsonを定義したステートフル変数に入れる
-    }, [open])
+        axios.get('/api/inventory/products/') // DBからデータを取得
+            .then((res) => res.data) // responseからdataを取り出す
+            .then((data) => {
+                setData(data); //DBから取得したデータをステートフル変数に入れる
+            })
+        // setData(productsData); //importしたjsonを定義したステートフル変数に入れる
+        }, [open])
 
     // ステートフル変数を定義
     const [id, setId] = useState<number | null>(0); //number型 or null型をidに設定可能, 初期値は0
@@ -149,7 +155,11 @@ export default function Page(){
      * 追加時の関数
      */
     const handleAdd = (data: ProductData) => {
-        result('success', '商品が登録されました')
+        axios.post("/api/inventory/products", data)
+            .then((response) => {
+                result('success', '商品が登録されました')
+            }
+        )
         setId(0);
     };
 
@@ -183,7 +193,11 @@ export default function Page(){
     }
 
     const handleEdit = (data: ProductData) => {
-        result('success', '商品が更新されました')
+        axios.put(`/api/inventory/products/${data.id}`, data)
+            .then((response) => {
+                result('success', '商品が更新されました')                
+            }
+        );
         setId(0);
     }
 
