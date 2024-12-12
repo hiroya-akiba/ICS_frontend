@@ -20,7 +20,7 @@ import { useForm } from "react-hook-form";
 import { useState, useEffect } from 'react';
 import productsData from "../sample/dummy_products.json";
 //import inventoriesData from "../sample/dummy_inventories.json";
-import axios from "axios";
+import axios from "../../../../plugins/axios";
 
 type ProductData = {
     id: number;
@@ -134,7 +134,7 @@ export default function PagePage({ params }: {
             purchase_date: new Date(),
             product: data.id,
         };
-        axios.post("/api/inventory/purchases", purchase)
+        axios.post("/api/inventory/purchase/", purchase)
             .then((response) => {
                 result('success', '商品を仕入れました')                
             })
@@ -146,7 +146,7 @@ export default function PagePage({ params }: {
             sales_date: new Date(),
             product: data.id,
         };
-        axios.post("/api/inventory/sales", sale)
+        axios.post("/api/inventory/sales/", sale)
             .then((response) =>{
                 result('success', '商品を卸しました')
             }

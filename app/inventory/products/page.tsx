@@ -29,7 +29,7 @@ import {useForm} from "react-hook-form";
 import React, { useState, useEffect } from 'react';
 import productsData from "./sample/dummy_products.json";
 import Link from "next/link";
-import axios from "axios";
+import axios from "../../../plugins/axios";
 
 /**
  * 製品データ
