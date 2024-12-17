@@ -1,5 +1,5 @@
 import axios from "axios";
-import { error } from "console";
+
 const axios_instance = axios.create({
     headers: {
         "Content-Type" : "application/json",
@@ -36,7 +36,7 @@ axios_instance.interceptors.response.use(
             }
 
             axios_instance
-                .post("/api/inventory/retry", {refresh: ""})
+                .post("/api/inventory/retry", {"refresh": ""})
                 .then((response) => {
                     return axios_instance(originalConfig);
                 })
